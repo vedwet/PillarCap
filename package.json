@@ -1,0 +1,16 @@
+{
+  "name": "pillarcap-bento",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "postinstall": "mkdir -p js && cp node_modules/motion/dist/motion.js js/motion.js",
+    "start": "python3 -m http.server 5173"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "motion": "^13.4.6"
+  },
+  "private": true
+}

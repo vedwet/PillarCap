@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PillarCap — Grow Your Wealth With Conviction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Poppins:wght@300;400;500&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
+<script>
+  // Theme: saved choice, else the system setting. Set before first paint to avoid a flash.
+  (() => {
+    let saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    const sys = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.dataset.theme = saved === "dark" || saved === "light" ? saved : sys;
+  })();
+  // Hide animated elements until Motion takes over (skipped for reduced-motion users).
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("is-loading");
+    setTimeout(() => document.documentElement.classList.remove("is-loading"), 5000);
+  }
+</script>
+<style>
+  /* ===== Swap images here later ===== */
+  :root {
+    --img-hero: url("images/hero.webp");
+    --img-thumb-1: url("images/hero.webp");
+    --img-avatar: url("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&q=80");
+
+    /* Palette sampled from the hero image */
+    --bg: #dde1e7;         /* misty blue-grey backdrop */
+    --card: #fbfbfd;
+    --ink: #1b2233;        /* deep navy of the building's shadow */
+    --muted: #7c8198;
+    --soft: #eef0f6;
+    --line: #d6d9e4;
+    --indigo: #4453c4;     /* particle blue */
+    --indigo-soft: #dfe3fa;
+    --orange: #f97e56;     /* glowing columns */
+    --peach: #fbe1d6;
+    --blush: #e9deeb;      /* lilac haze */
+    --mauve: #a472b0;
+    --art-bg: #e6e9ef;     /* pixel-art backdrop = the video's mist */
+    --surface: #ffffff;    /* small pills, chips on top of cards/video */
+    --on-ink: #ffffff;     /* text/icons on filled --ink buttons */
+    --text-2: #2d3348;
+    --pin: #1b2233;        /* hotspot pins stay dark on the light video */
+    --glass: linear-gradient(160deg, rgba(255,255,255,.62), rgba(233, 222, 235, .45));
+    --glass-line: rgba(255,255,255,.75);
+    --shadow: rgba(27, 34, 51, .18);
+    --glow: rgba(68, 83, 196, .14);
+    --grad: linear-gradient(135deg, var(--indigo) 0%, #8a6fc4 50%, var(--orange) 100%);
+    color-scheme: light;
+    --display: "Space Grotesk", system-ui, sans-serif;
+    --body: "Poppins", system-ui, sans-serif;
+  }
+
+  /* ===== Dark mode — night-time version of the same image palette ===== */
+  :root[data-theme="dark"] {
+    --bg: #090c16;
+    --card: #11152a;
+    --ink: #e8eaf6;
+    --on-ink: #11152a;
+    --muted: #8b90ab;
+    --soft: #1a1f38;
+    --line: #272d4a;
+    --indigo: #7f8cf7;
+    --indigo-soft: #252c5c;
+    --orange: #ff8a62;
+    --peach: #4b2a2b;
+    --blush: #33284a;
+    --mauve: #c08ad0;
+    --art-bg: #161b36;
+    --surface: #1d2340;
+    --text-2: #c3c7dc;
+    --glass: linear-gradient(160deg, rgba(20, 25, 48, .72), rgba(51, 40, 74, .55));
+    --glass-line: rgba(127, 140, 247, .22);
+    --shadow: rgba(0, 0, 0, .6);
+    --glow: rgba(127, 140, 247, .18);
+    --grad: linear-gradient(135deg, var(--indigo) 0%, #b08ae0 50%, var(--orange) 100%);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(60% 50% at 50% 30%, rgba(68, 83, 196, .08), transparent 70%),
+      radial-gradient(40% 40% at 55% 80%, rgba(249, 126, 86, .08), transparent 70%),
+      var(--bg);
+    font-family: var(--body);
+    color: var(--ink);
+    min-height: 100vh;
+    transition: background-color .5s;
+    display: grid;
+    place-items: center;
+    padding: 40px 16px;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  svg { display: block; }
+
+  /* Pixel / ASCII animation canvases (js/pixel-art.js) */
+  [data-art] { position: relative; overflow: hidden; background: var(--art-bg); }
+  .art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  /* Anything with data-a starts hidden; Motion fades it in */
+  .is-loading [data-a] { opacity: 0; }
+
+  .page {
+    width: 100%;
+    max-width: 1112px;
+    background: var(--card);
+    padding: 22px 24px 28px;
+    display: grid;
+    grid-template-columns: 272px 1fr 256px;
+    column-gap: 46px;
+    box-shadow: 0 30px 80px -30px var(--shadow);
+  }
+
+  /* ================= LEFT ================= */
+  .left { display: flex; flex-direction: column; padding-top: 2px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; }
+  .logo { display: flex; align-items: center; gap: 7px; font-family: "Archivo", sans-serif; font-weight: 800; font-size: 14px; letter-spacing: -0.2px; }
+  .menu {
+    display: flex; align-items: center; gap: 8px;
+    border: 1.5px solid var(--ink); border-radius: 999px;
+    padding: 2px 12px 2px 2px; font-size: 13px; background: var(--surface);
+  }
+  .menu .dot { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); display: grid; place-items: center; }
+
+  .hero-title {
+    margin-top: 110px;
+    font-family: var(--display); font-weight: 400;
+    font-size: 36.5px; line-height: 1.24; letter-spacing: -0.3px;
+    text-transform: uppercase;
+  }
+  .hero-title .row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .hero-title .hl {
+    background: linear-gradient(100deg, var(--indigo-soft) 0%, var(--blush) 55%, var(--peach) 100%);
+    border-radius: 22px; padding: 0 12px 0 10px; transform: rotate(-3deg); display: inline-block; margin-left: 2px;
+  }
+  .twin { display: inline-flex; align-items: center; margin-left: 4px; }
+  .twin i { width: 30px; height: 30px; border-radius: 50%; display: block; }
+  .twin i:first-child { border: 1.5px solid var(--indigo); }
+  .twin i:last-child { margin-left: -14px; border: 2px solid var(--card); }
+
+  .divider { height: 1px; background: linear-gradient(90deg, var(--indigo) 0%, var(--line) 45%); margin: 26px 0 16px; transform-origin: left center; }
+  .lead { font-size: 12.5px; line-height: 1.38; color: var(--text-2); max-width: 240px; }
+  .lead .mark { color: var(--indigo); }
+
+  .cta { display: flex; gap: 16px; margin-top: 38px; }
+  .btn { height: 33px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; width: 120px; transition: box-shadow .3s, background .3s; }
+  .btn-dark { background: var(--ink); color: var(--on-ink); }
+  .btn-dark:hover { box-shadow: 0 8px 22px -6px rgba(68, 83, 196, .6); }
+  .btn-dark svg { stroke: var(--orange); }
+  .btn-line { border: 1.5px solid var(--ink); }
+  .btn-line svg { stroke: currentColor; }
+  .btn-line:hover { background: var(--indigo-soft); }
+
+  .promo { margin-top: auto; }
+  .promo p { font-size: 11.5px; line-height: 1.28; max-width: 150px; margin-bottom: 8px; }
+  .promo-row { display: flex; align-items: center; gap: 12px; }
+  .promo-img {
+    width: 175px; height: 70px; border-radius: 8px;
+    position: relative;
+  }
+  /* notch top-right */
+  .promo-img::after {
+    content: ""; position: absolute; right: -1px; top: -1px; width: 34px; height: 24px; z-index: 1;
+    background: var(--card); border-bottom-left-radius: 10px;
+  }
+  .promo-nav { display: flex; align-items: center; }
+  .promo-nav .go { width: 34px; height: 34px; border-radius: 50%; background: var(--ink); color: var(--on-ink); display: grid; place-items: center; z-index: 2; position: relative; }
+  .promo-nav .half { width: 17px; height: 34px; border: 1.5px solid var(--indigo); border-left: 0; border-radius: 0 17px 17px 0; margin-left: -1px; }
+  .promo-nav .half + .half { margin-left: 0; border-color: var(--orange); }
+
+  /* ================= CENTER ================= */
+  .center { display: flex; flex-direction: column; }
+  .hero { position: relative; flex: 1; min-height: 570px; }
+  .hero-media {
+    position: absolute; inset: 0; border-radius: 24px; overflow: hidden;
+    background: #e3e6ea;
+  }
+  .hero-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: 50% 45%; display: block;
+  }
+  /* top tab notch */
+  .tab {
+    position: absolute; top: -1px; left: 0; right: 0; margin: 0 auto; width: max-content;
+    background: var(--card); padding: 4px 8px 8px; border-radius: 0 0 20px 20px;
+    display: flex; gap: 4px; z-index: 2;
+  }
+  .tab::before, .tab::after { content: ""; position: absolute; top: 0; width: 20px; height: 20px; }
+  .tab::before { left: -20px; background: radial-gradient(circle at 0 100%, transparent 19.5px, var(--card) 20px); }
+  .tab::after  { right: -20px; background: radial-gradient(circle at 100% 100%, transparent 19.5px, var(--card) 20px); }
+  .tab .inner { display: flex; gap: 4px; background: var(--soft); border-radius: 999px; padding: 3px; }
+  .tab .thumb { width: 56px; height: 26px; border-radius: 999px; background-size: cover; background-position: center; }
+  .tab .thumb.hero-thumb { background-size: 260% auto; background-position: 50% 48%; }
+  .tab .add { width: 58px; height: 26px; border-radius: 999px; background: var(--surface); display: grid; place-items: center; font-size: 17px; font-weight: 300; color: var(--indigo); }
+
+  .corner-icons { position: absolute; right: 18px; top: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .corner-icons span { width: 22px; height: 22px; border-radius: 50%; background: var(--surface); display: grid; place-items: center; box-shadow: 0 4px 12px rgba(68, 83, 196, .15); }
+
+  .spot { position: absolute; display: flex; align-items: flex-start; }
+  .spot .pin {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--pin);
+    display: grid; place-items: center;
+    box-shadow: 0 0 0 4px rgba(255,255,255,.9), 0 0 0 9px rgba(255,255,255,.35);
+    position: relative; z-index: 2;
+  }
+  /* soft sonar pulse once loaded */
+  .spot .pin::after {
+    content: ""; position: absolute; inset: -9px; border-radius: 50%;
+    border: 1px solid rgba(68, 83, 196, .55);
+    animation: pulse 2.8s 2.4s ease-out infinite; opacity: 0;
+  }
+  .spot:nth-of-type(2) .pin::after { animation-delay: 3.3s; border-color: rgba(249, 126, 86, .7); }
+  .spot:nth-of-type(3) .pin::after { animation-delay: 4.2s; }
+  @keyframes pulse { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+
+  .spot .label {
+    background: var(--surface); font-size: 10.5px; border-radius: 999px; padding: 5px 11px 5px 9px;
+    margin-top: 16px; margin-left: -4px; white-space: nowrap;
+    box-shadow: 0 6px 18px var(--glow);
+  }
+  .spot.rev { flex-direction: row-reverse; }
+  .spot.rev .label { margin-left: 0; margin-right: -4px; }
+
+  .glass {
+    background: var(--glass);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--glass-line);
+    box-shadow: 0 10px 30px -8px rgba(68, 83, 196, .22);
+  }
+  .trust {
+    position: absolute; left: -32px; top: 292px; width: 116px; border-radius: 10px; padding: 7px 8px;
+    color: var(--ink); z-index: 2;
+  }
+  .trust b {
+    font-family: var(--display); font-weight: 400; font-size: 17px; display: block; line-height: 1;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .trust small { font-size: 8.5px; line-height: 1.2; display: block; margin-top: 3px; }
+  .trust .join {
+    margin: 7px 0 0 auto; width: 58px; height: 16px; border: 1px solid var(--ink); border-radius: 999px;
+    font-size: 8.5px; display: flex; align-items: center; justify-content: space-between; padding: 0 1px 0 9px;
+  }
+  .trust .join i { width: 12px; height: 12px; border-radius: 50%; background: var(--indigo); color: #fff; font-style: normal; font-size: 10px; display: grid; place-items: center; line-height: 1; }
+
+  .safe {
+    position: absolute; right: 16px; bottom: 16px; width: 125px; border-radius: 10px; padding: 6px 6px 7px;
+    color: var(--ink);
+  }
+  .safe p { font-size: 10.5px; line-height: 1.25; margin: 0 0 7px 3px; }
+  .safe ul { list-style: none; display: grid; gap: 5px; }
+  .safe li {
+    background: var(--surface); color: var(--ink); border-radius: 999px; height: 18px;
+    display: flex; align-items: center; justify-content: space-between; font-size: 9px; padding: 0 2px 0 7px;
+  }
+  .safe li i { width: 14px; height: 14px; border-radius: 50%; background: var(--orange); display: grid; place-items: center; }
+  .safe li:nth-child(1) i { background: var(--indigo); }
+  .safe li:nth-child(2) i { background: var(--mauve); }
+
+
+  /* ================= RIGHT ================= */
+  .right { display: flex; flex-direction: column; }
+  .search-row { display: flex; align-items: center; gap: 10px; }
+  .search {
+    flex: 1; min-width: 0; height: 30px; border-radius: 999px; background: var(--soft);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+    font-size: 11.5px; font-family: var(--display); transform-origin: right center;
+  }
+  .search input { flex: 1; border: 0; background: none; outline: none; margin-left: 8px; font: inherit; }
+  .search span { color: var(--indigo); font-weight: 500; }
+  .theme-toggle {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--soft); color: var(--ink);
+    display: grid; place-items: center; flex-shrink: 0; transition: background .3s;
+  }
+  .theme-toggle:hover { background: var(--indigo-soft); }
+  .theme-toggle svg { grid-area: 1 / 1; }
+  .theme-toggle .sun { color: var(--orange); }
+  :root[data-theme="light"] .theme-toggle .sun,
+  :root[data-theme="dark"] .theme-toggle .moon { display: none; }
+  .theme-toggle .moon { color: var(--indigo); }
+
+  /* circular reveal when switching themes */
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+  .avatar { width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%; background: var(--indigo-soft) var(--img-avatar) center/cover; box-shadow: 0 0 0 2px var(--card), 0 0 0 3px var(--indigo-soft); }
+
+  .plans { margin-top: 34px; display: grid; gap: 0; }
+  .plan { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; }
+  .plan .chip { background: var(--soft); border-radius: 999px; height: 22px; padding: 0 12px 0 10px; display: inline-flex; align-items: center; gap: 7px; font-size: 11px; }
+  .plan .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--indigo)); }
+  .plan .date { font-family: var(--display); font-size: 11px; color: var(--muted); margin-left: auto; margin-right: 10px; }
+  .plan .plus { width: 20px; height: 20px; border-radius: 50%; background: var(--ink); color: var(--on-ink); display: grid; place-items: center; font-size: 13px; line-height: 1; transition: background .3s; }
+  .plan .plus:hover { background: var(--indigo); }
+  .plan-body { display: flex; justify-content: space-between; align-items: flex-start; margin: -2px 0 18px; }
+  .plan-body p { font-size: 10.5px; color: var(--muted); line-height: 1.25; max-width: 100px; }
+  .plan-body a { display: inline-flex; gap: 4px; align-items: center; font-size: 10.5px; margin-top: 7px; color: var(--indigo); }
+  .plan-body .pic { width: 96px; height: 54px; border-radius: 9px; position: relative; }
+  .plan-body .pic::before {
+    content: ""; position: absolute; left: -1px; top: -1px; width: 16px; height: 16px; z-index: 1;
+    background: var(--card); border-bottom-right-radius: 8px;
+  }
+
+  .stats { margin-top: 20px; margin-bottom: 32px; background: var(--soft); border-radius: 14px; padding: 12px 16px 12px 18px; }
+  .stats header { display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; }
+  .stats header svg { fill: var(--indigo); }
+  .chart { display: grid; grid-template-columns: 28px repeat(5, 1fr); margin-top: 10px; }
+  .yaxis { display: grid; align-content: end; gap: 3px; font-family: var(--display); font-size: 10px; padding-bottom: 20px; color: var(--muted); }
+  .yaxis span { height: 13.5px; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 10px; }
+  .bar { width: 13px; height: 66px; border-radius: 999px; background: var(--surface); display: flex; align-items: flex-end; overflow: hidden; }
+  /* blue top melting into orange base — like the building */
+  .bar i { width: 100%; border-radius: 999px; background: linear-gradient(180deg, var(--indigo) 0%, #9a6fb8 55%, var(--orange) 100%); }
+
+  .orbit { margin-top: auto; position: relative; height: 170px; }
+  .orbit .ring { position: absolute; right: 0; top: 0; width: 158px; height: 158px; border-radius: 50%; border: 1px solid var(--line); }
+  .orbit .ring::before { /* coloured arc on left */
+    content: ""; position: absolute; inset: -1px; border-radius: 50%;
+    border: 1.5px solid transparent; border-left-color: var(--indigo); border-bottom-color: rgba(249,126,86,.6); transform: rotate(10deg);
+  }
+  .orbit .pic { position: absolute; right: 20px; top: 20px; width: 118px; height: 118px; border-radius: 50%; box-shadow: 0 14px 30px -10px rgba(249, 126, 86, .45); }
+  .orbit .tag { position: absolute; font-size: 10.5px; line-height: 1.2; text-align: right; display: flex; align-items: center; gap: 8px; }
+  .orbit .tag::after { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--dot, var(--indigo)); flex-shrink: 0; box-shadow: 0 0 0 3px var(--card); }
+  .orbit .t1 { right: 118px; top: 0; }
+  .orbit .t2 { right: 150px; top: 38px; --dot: var(--mauve); }
+  .orbit .t3 { right: 148px; top: 88px; --dot: var(--orange); }
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width: 1100px) {
+    .page { grid-template-columns: 1fr 1fr; row-gap: 40px; column-gap: 32px; }
+    .center { grid-column: 1 / -1; order: 3; }
+    .hero-title { margin-top: 56px; }
+    .promo { margin-top: 40px; }
+    .orbit { margin-top: 40px; }
+  }
+  @media (max-width: 720px) {
+    body { padding: 0; }
+    .page { grid-template-columns: 1fr; padding: 20px 16px; }
+    .center { order: 0; }
+    .hero-title { font-size: 30px; }
+    .hero { min-height: 480px; }
+    .trust { left: 12px; }
+    .spot .label { font-size: 9.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spot .pin::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <main class="page" data-a>
+
+    <!-- LEFT -->
+    <section class="left">
+      <div class="topbar">
+        <a href="#" class="logo" data-a>
+          <svg width="24" height="20" viewBox="0 0 24 20"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4453c4"/><stop offset="1" style="stop-color: var(--ink)"/></linearGradient></defs><path fill="url(#lg)" d="M7 0h17l-7 8H0z"/><path fill="currentColor" d="M7 12h17l-7 8H0z"/></svg>
+          PILLARCAP.
+        </a>
+        <button class="menu" data-a>
+          <span class="dot">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" style="color: var(--on-ink)"><circle cx="4" cy="4" r="2.6"/><circle cx="10" cy="4" r="2.6"/><circle cx="4" cy="10" r="2.6"/><circle cx="10" cy="10" r="2.6" fill="#f97e56"/></svg>
+          </span>
+          Menu
+        </button>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="row" data-a>Grow <span class="hl" data-a>Your</span></span>
+        <span class="row" data-a>Money with <span class="twin"><i data-a></i><i data-a data-art="mosaic"></i></span></span>
+        <span class="row" data-a>Conviction</span>
+      </h1>
+
+      <div class="divider" data-a></div>
+      <p class="lead" data-a><span class="mark">• //</span>With research-driven portfolios and disciplined risk management, your capital is built to compound</p>
+
+      <div class="cta">
+        <a href="#" class="btn btn-dark" data-a>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+          Invest
+        </a>
+        <a href="#" class="btn btn-line" data-a>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          Explore
+        </a>
+      </div>
+
+      <div class="promo">
+        <p data-a>Start building your portfolio with PillarCap today</p>
+        <div class="promo-row">
+          <div class="promo-img" data-a data-art="columns"></div>
+          <div class="promo-nav">
+            <a href="#" class="go" data-a><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M0 6h14M9 1l5 5-5 5"/></svg></a>
+            <span class="half" data-a></span>
+            <span class="half" data-a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CENTER -->
+    <section class="center">
+      <div class="hero">
+        <div class="hero-media" data-a>
+          <video class="hero-img" src="videos/hero.mp4" poster="images/hero.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+        </div>
+
+        <div class="tab" data-a>
+          <div class="inner">
+            <span class="thumb hero-thumb" style="background-image: var(--img-thumb-1)"></span>
+            <span class="thumb" data-art="mosaic"></span>
+            <button class="add">+</button>
+          </div>
+        </div>
+
+        <div class="corner-icons">
+          <span data-a><svg width="12" height="12" viewBox="0 0 24 24" style="fill: var(--indigo)"><path d="M12 2a5 5 0 0 1 5 5H7a5 5 0 0 1 5-5zM22 12a5 5 0 0 1-5 5V7a5 5 0 0 1 5 5zM12 22a5 5 0 0 1-5-5h10a5 5 0 0 1-5 5zM2 12a5 5 0 0 1 5-5v10a5 5 0 0 1-5-5z"/></svg></span>
+          <span data-a><svg width="12" height="12" viewBox="0 0 24 24" style="fill: var(--orange)"><path d="M12 2a10 10 0 1 0 10 10h-4a6 6 0 1 1-6-6z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        </div>
+
+        <div class="spot" style="left: 52px; top: 90px;">
+          <span class="pin" data-a><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.4"><path d="M1 9 9 1M3 1h6v6"/></svg></span>
+          <span class="label" data-a>Diversified portfolios</span>
+        </div>
+
+        <div class="spot rev" style="right: 52px; top: 252px;">
+          <span class="pin" data-a><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.4"><path d="M1 9 9 1M3 1h6v6"/></svg></span>
+          <span class="label" data-a>Transparent fees</span>
+        </div>
+
+        <div class="spot" style="left: 52px; top: 459px;">
+          <span class="pin" data-a><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.4"><path d="M1 9 9 1M3 1h6v6"/></svg></span>
+          <span class="label" data-a>Instant withdrawals</span>
+        </div>
+
+        <div class="trust glass" data-a>
+          <b><span data-count="48" data-suffix="k">48k</span></b>
+          <small>investors have grown their wealth with us. Join us!</small>
+          <a href="#" class="join">Join <i>+</i></a>
+        </div>
+
+        <div class="safe glass" data-a>
+          <p>Build long-term wealth with PillarCap today.</p>
+          <ul>
+            <li data-a>Stability <i><svg width="7" height="7" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 9 9 1M3 1h6v6"/></svg></i></li>
+            <li data-a>Growth <i><svg width="7" height="7" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 9 9 1M3 1h6v6"/></svg></i></li>
+            <li data-a>Discipline <i><svg width="7" height="7" viewBox="0 0 10 10" fill="none" stroke="#fff" stroke-width="1.6"><path d="M1 9 9 1M3 1h6v6"/></svg></i></li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT -->
+    <section class="right">
+      <div class="search-row">
+        <label class="search" data-a>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input type="text" aria-label="Search" />
+          <span>GO</span>
+        </label>
+        <button class="theme-toggle" data-a aria-label="Toggle dark mode">
+          <svg class="sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+          <svg class="moon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 14.6A8.5 8.5 0 0 1 9.4 3.5a8.5 8.5 0 1 0 11.1 11.1z"/></svg>
+        </button>
+        <span class="avatar" data-a></span>
+      </div>
+
+      <div class="plans">
+        <div class="plan" data-a><span class="chip">Starter plan</span><span class="date">From $500</span><button class="plus">+</button></div>
+        <div class="plan-body" data-a>
+          <div>
+            <p>Begin investing with a low entry and zero lock-in!</p>
+            <a href="#">Invest <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M1 9 9 1M3 1h6v6"/></svg></a>
+          </div>
+          <div class="pic" data-art="ticker"></div>
+        </div>
+        <div class="plan" data-a style="--dot: var(--mauve)"><span class="chip">Growth plan</span><span class="date">8.4% avg p.a.</span><button class="plus">+</button></div>
+        <div class="plan" data-a style="--dot: var(--orange)"><span class="chip">Wealth plan</span><span class="date">Private advisor</span><button class="plus">+</button></div>
+      </div>
+
+      <div class="stats" data-a>
+        <header>
+          <span>Portfolio growth</span>
+          <svg width="13" height="13" viewBox="0 0 24 24"><path d="M12 2a5 5 0 0 1 5 5H7a5 5 0 0 1 5-5zM22 12a5 5 0 0 1-5 5V7a5 5 0 0 1 5 5zM12 22a5 5 0 0 1-5-5h10a5 5 0 0 1-5 5zM2 12a5 5 0 0 1 5-5v10a5 5 0 0 1-5-5z"/></svg>
+        </header>
+        <div class="chart">
+          <div class="yaxis"><span>20%</span><span>15%</span><span>10%</span><span>5%</span></div>
+          <div class="col"><span class="bar"><i style="height:40%"></i></span>Jan</div>
+          <div class="col"><span class="bar"><i style="height:57%"></i></span>Feb</div>
+          <div class="col"><span class="bar"><i style="height:74%"></i></span>Mar</div>
+          <div class="col"><span class="bar"><i style="height:60%"></i></span>Apr</div>
+          <div class="col"><span class="bar"><i style="height:85%"></i></span>May</div>
+        </div>
+      </div>
+
+      <div class="orbit">
+        <div class="ring" data-a></div>
+        <div class="pic" data-a data-art="globe"></div>
+        <span class="tag t1" data-a>98% client<br />retention</span>
+        <span class="tag t2" data-a>Tracking markets<br />around the clock</span>
+        <span class="tag t3" data-a>Top-rated<br />fund manager</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Motion (Framer Motion's vanilla JS API) — copied from node_modules by `npm install` -->
+  <script src="js/motion.js"></script>
+  <script src="js/pixel-art.js"></script>
+  <script>
+  // ===== Theme toggle =====
+  (() => {
+    const root = document.documentElement;
+    const btn = document.querySelector(".theme-toggle");
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const sysDark = matchMedia("(prefers-color-scheme: dark)");
+
+    const save = (t) => { try { localStorage.setItem("theme", t); } catch (e) {} };
+    const saved = () => { try { return localStorage.getItem("theme"); } catch (e) { return null; } };
+
+    // Follow the OS setting until the visitor picks a theme themselves
+    sysDark.addEventListener("change", (e) => {
+      if (!saved()) root.dataset.theme = e.matches ? "dark" : "light";
+    });
+
+    btn.addEventListener("click", () => {
+      const next = root.dataset.theme === "dark" ? "light" : "dark";
+      const apply = () => { root.dataset.theme = next; save(next); };
+
+      // Icon spins as it swaps
+      if (window.Motion && !reduce) {
+        Motion.animate(btn, { rotate: [0, 360], scale: [1, 0.8, 1] }, { duration: 0.6, ease: [0.16, 1, 0.3, 1] });
+      }
+
+      // New theme spreads out in a circle from the button
+      if (!document.startViewTransition || reduce || document.hidden) return apply();
+      const r = btn.getBoundingClientRect();
+      const x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      document.startViewTransition(apply).ready.then(() => {
+        root.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+          { duration: 700, easing: "cubic-bezier(0.16, 1, 0.3, 1)", pseudoElement: "::view-transition-new(root)" }
+        );
+      }).catch(() => {}); // transition skipped — theme is still applied
+    });
+  })();
+  </script>
+  <script>
+  (() => {
+    const root = document.documentElement;
+    // Make sure the hero video plays even if the browser delayed autoplay
+    const heroVideo = document.querySelector(".hero-img");
+    if (heroVideo) heroVideo.play().catch(() => {});
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!window.Motion || reduce) { root.classList.remove("is-loading"); return; }
+
+    const { animate, stagger } = Motion;
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => [...document.querySelectorAll(s)];
+    const ease = [0.16, 1, 0.3, 1];            // soft "expo out"
+    const pop = { type: "spring", stiffness: 260, damping: 18 };
+
+    // Keep everything hidden inline until its own (possibly delayed) animation starts
+    $$("[data-a]").forEach((el) => (el.style.opacity = 0));
+    root.classList.remove("is-loading");
+
+    // 1. Card settles in
+    animate(".page", { opacity: [0, 1], y: [24, 0], scale: [0.985, 1] }, { duration: 0.8, ease });
+
+    // 2. Hero image — the star: rises from the bottom like a curtain, then slowly settles its zoom
+    animate(".hero-media", { opacity: [0, 1], clipPath: ["inset(100% 0% 0% 0% round 24px)", "inset(0% 0% 0% 0% round 24px)"] }, { duration: 1.2, delay: 0.15, ease });
+    animate(".hero-img", { scale: [1.25, 1], filter: ["blur(10px)", "blur(0px)"] }, { duration: 1.8, delay: 0.15, ease });
+
+    // 3. Top bar slides in from its edges
+    animate(".logo", { opacity: [0, 1], x: [-16, 0] }, { duration: 0.7, delay: 0.3, ease });
+    animate(".menu", { opacity: [0, 1], x: [16, 0] }, { duration: 0.7, delay: 0.35, ease });
+
+    // 4. Headline — each line rises out of a blur, one after another
+    animate(".hero-title .row", { opacity: [0, 1], y: [28, 0], filter: ["blur(8px)", "blur(0px)"] }, { duration: 0.9, delay: stagger(0.1, { startDelay: 0.4 }), ease });
+    animate(".hero-title .hl", { opacity: [0, 1], scale: [0.6, 1], rotate: [10, -3] }, { ...pop, delay: 0.8 });
+    // the two circles slide together and overlap
+    const [ringA, ringB] = $$(".twin i");
+    animate(ringA, { opacity: [0, 1], x: [-12, 0] }, { duration: 0.7, delay: 0.95, ease });
+    animate(ringB, { opacity: [0, 1], x: [18, 0], scale: [0.5, 1] }, { ...pop, delay: 1.0 });
+
+    // 5. Divider draws left→right, copy follows
+    animate(".divider", { opacity: [0, 1], scaleX: [0, 1] }, { duration: 1, delay: 0.75, ease });
+    animate(".lead", { opacity: [0, 1], y: [12, 0] }, { duration: 0.8, delay: 0.9, ease });
+
+    // 6. Buttons pop in
+    animate(".cta .btn", { opacity: [0, 1], y: [14, 0], scale: [0.85, 1] }, { ...pop, delay: stagger(0.08, { startDelay: 1.05 }) });
+
+    // 7. Promo: text, then image wipes open, then arrow + half-rings roll out
+    animate(".promo p", { opacity: [0, 1], y: [10, 0] }, { duration: 0.7, delay: 1.15, ease });
+    animate(".promo-img", { opacity: [0, 1], clipPath: ["inset(0% 100% 0% 0% round 8px)", "inset(0% 0% 0% 0% round 8px)"] }, { duration: 1, delay: 1.2, ease });
+    animate(".promo-nav .go", { opacity: [0, 1], scale: [0, 1], rotate: [-90, 0] }, { ...pop, delay: 1.35 });
+    animate(".promo-nav .half", { opacity: [0, 1], x: [-30, 0] }, { duration: 0.7, delay: stagger(0.08, { startDelay: 1.45 }), ease });
+
+    // 8. Gallery tab drops down into its notch; corner icons spin in
+    animate(".tab", { opacity: [0, 1], y: [-36, 0] }, { duration: 0.8, delay: 0.9, ease });
+    animate(".corner-icons span", { opacity: [0, 1], scale: [0, 1], rotate: [-120, 0] }, { ...pop, delay: stagger(0.1, { startDelay: 1.05 }) });
+
+    // 9. Hotspots: pin pops, then its label unfurls away from the pin
+    $$(".spot").forEach((spot, i) => {
+      const d = 1.25 + i * 0.18;
+      const fromX = spot.classList.contains("rev") ? 14 : -14;
+      animate(spot.querySelector(".pin"), { opacity: [0, 1], scale: [0, 1] }, { ...pop, delay: d });
+      animate(spot.querySelector(".label"), { opacity: [0, 1], x: [fromX, 0], clipPath: [spot.classList.contains("rev") ? "inset(0% 0% 0% 100% round 999px)" : "inset(0% 100% 0% 0% round 999px)", "inset(0% 0% 0% 0% round 999px)"] }, { duration: 0.7, delay: d + 0.15, ease });
+    });
+
+    // 10. Glass cards float in from the side they hang off
+    animate(".trust", { opacity: [0, 1], x: [-40, 0], filter: ["blur(6px)", "blur(0px)"] }, { duration: 0.9, delay: 1.35, ease });
+    animate(".safe", { opacity: [0, 1], y: [36, 0], filter: ["blur(6px)", "blur(0px)"] }, { duration: 0.9, delay: 1.5, ease });
+    animate(".safe li", { opacity: [0, 1], x: [12, 0] }, { duration: 0.6, delay: stagger(0.08, { startDelay: 1.75 }), ease });
+
+
+    // 12. Right column: search stretches open, avatar pops, plans stack in from the right
+    animate(".search", { opacity: [0, 1], scaleX: [0.4, 1] }, { duration: 0.9, delay: 0.35, ease });
+    animate(".avatar", { opacity: [0, 1], scale: [0, 1] }, { ...pop, delay: 0.5 });
+    animate(".theme-toggle", { opacity: [0, 1], scale: [0, 1], rotate: [-180, 0] }, { ...pop, delay: 0.45 });
+    animate(".plans > [data-a]", { opacity: [0, 1], x: [26, 0] }, { duration: 0.7, delay: stagger(0.08, { startDelay: 0.6 }), ease });
+
+    // 13. Stats card rises, then bars grow up like a rising market
+    animate(".stats", { opacity: [0, 1], y: [22, 0] }, { duration: 0.8, delay: 0.9, ease });
+    $$(".bar i").forEach((bar, i) => {
+      animate(bar, { height: ["0%", bar.style.height] }, { type: "spring", stiffness: 120, damping: 14, delay: 1.15 + i * 0.08 });
+    });
+
+    // 14. Orbit: ring sweeps round, picture blooms, stats pop onto the arc
+    animate(".orbit .ring", { opacity: [0, 1], rotate: [-140, 0], scale: [0.8, 1] }, { duration: 1.3, delay: 1.2, ease });
+    animate(".orbit .pic", { opacity: [0, 1], scale: [0.5, 1] }, { ...pop, delay: 1.4 });
+    animate(".orbit .tag", { opacity: [0, 1], x: [14, 0] }, { duration: 0.6, delay: stagger(0.12, { startDelay: 1.6 }), ease });
+
+    // 15. Numbers count up
+    $$("[data-count]").forEach((el) => {
+      const to = parseFloat(el.dataset.count), dp = +(el.dataset.decimals || 0);
+      const pre = el.dataset.prefix || "", suf = el.dataset.suffix || "";
+      animate(0, to, { duration: 1.6, delay: 1.45, ease, onUpdate: (v) => (el.textContent = pre + v.toFixed(dp) + suf) });
+    });
+  })();
+  </script>
+</body>
+</html>
